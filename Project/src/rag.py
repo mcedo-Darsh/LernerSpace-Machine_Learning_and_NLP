@@ -5,7 +5,8 @@ from pathlib import Path
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
-import anthropic
+from google import genai
+from google.genai import types
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 INDEX_DIR = BASE_DIR / "data" / "index"
@@ -13,7 +14,7 @@ CHUNKS_PATH = INDEX_DIR / "chunks.json"
 FAISS_PATH = INDEX_DIR / "faiss.index"
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-CLAUDE_MODEL = "claude-sonnet-5"
+GEMINI_MODEL = "gemini-2.5-flash"
 TOP_K = 5
 
 SYSTEM_PROMPT = """You are IITB Insti-Assist, an academic assistant for IIT Bombay students.
@@ -42,7 +43,7 @@ class RagPipeline:
         with open(CHUNKS_PATH, encoding="utf-8") as f:
             self.chunks = json.load(f)
         self.embedder = SentenceTransformer(EMBEDDING_MODEL)
-        self.client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
+        self.client = genai.Client(http_options={'api_version': 'v1beta'})
 
     def retrieve(self, query: str, k: int = TOP_K):
         q_vec = self.embedder.encode([query], normalize_embeddings=True).astype("float32")
@@ -68,15 +69,15 @@ class RagPipeline:
         retrieved = self.retrieve(query, k=k)
         prompt = self.build_prompt(query, retrieved)
 
-        response = self.client.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=1000,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": prompt}],
+        response = self.client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                temperature=0.1,
+            ),
         )
-        answer_text = "".join(
-            block.text for block in response.content if block.type == "text"
-        )
+        answer_text = response.text
 
         # de-duplicate sources for display (a doc/page may appear via multiple chunks)
         seen = set()

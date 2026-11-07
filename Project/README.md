@@ -10,7 +10,7 @@ PDFs regarding the topics mentioned above were downloaded from the academic webs
 
 2. **build_index.py** - it splits page text into approximately 800 character overlapping chunks, embeds them with sentence-transformers (all-MiniLM-L6-v2), and stores the vectors in a FAISS index.
 
-3. **rag.py** - it takes questions, embeds them with the same model, retrieves the top-k most similar chunks from FAISS, and sends them to the Claude API as context.
+3. **rag.py** - it takes questions, embeds them with the same model, retrieves the top-k most similar chunks from FAISS, and sends them to Google Gemini as context.
 
 4. **app.py** — it a small Streamlit chat UI that shows the answer and sources. 
 
@@ -45,10 +45,10 @@ pip install -r requirements.txt
 
 ### 3. API key
 
-Get a key from the [Anthropic Console](https://console.anthropic.com/) and set it:
+Create a free token at [Gemini AI Studio](https://aistudio.google.com/api-keys) and set it:
 
 ```bash
-export ANTHROPIC_API_KEY=your-key-here
+export GEMINI_API_KEY=your-token-here
 ```
 
 ## Running the pipeline

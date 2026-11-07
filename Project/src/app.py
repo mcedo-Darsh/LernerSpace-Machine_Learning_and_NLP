@@ -5,7 +5,7 @@ from pathlib import Path
 import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from rag import RagPipeline  # noqa: E402
+from rag import RagPipeline 
 
 st.set_page_config(page_title="IITB Insti-Assist", page_icon="🎓", layout="centered")
 
@@ -18,8 +18,8 @@ def load_pipeline():
 st.title("🎓 IITB Insti-Assist")
 st.caption("Academic Assistant — ask about course registration, grading policy, the academic calendar, exam rules, and course offerings at IIT Bombay.")
 
-if not os.environ.get("ANTHROPIC_API_KEY"):
-    st.error("ANTHROPIC_API_KEY is not set.")
+if not os.environ.get("GEMINI_API_KEY"):
+    st.error("GEMINI_API_KEY is not set.")
     st.stop()
 
 try:

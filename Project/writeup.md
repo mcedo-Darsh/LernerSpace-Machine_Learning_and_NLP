@@ -24,8 +24,9 @@ courses/* (29 files) - Department-wise running courses for Autumn 2026-27 (cours
 
 **Chunking:** build_index.py splits page text into approximately 800 character with 150 characteroverlapping chunks, embeds them with sentence-transformers (all-MiniLM-L6-v2), and stores the vectors in a FAISS index.
 
-**Embedding + retrieval:** Chunks are embedded with `sentence-transformers` (`all-MiniLM-L6-v2`, 384-dim), a small, fast, well-established model well suited to short-document semantic search and easy to run without a GPU. The normalized vectors are stored in a FAISS `IndexFlatIP` index, so inner product is equivalent to cosine similarity — simple and exact. At query time the top-5 chunks are retrieved (configurable in the UI) and pass them to Claude with an explicit instruction to answer only from that context and say "I don't know"
-otherwise, plus a rule against stating specific facts (dates, grades, slots) that aren't grounded in the retrieved text. The UI displays which documents and pages were used for every answer.
+**Embedding + retrieval:** Chunks are embedded with `sentence-transformers` (`all-MiniLM-L6-v2`, 384-dim), a small, fast, well-established model well suited to short-document semantic search and easy to run without a GPU. The normalized vectors are stored in a FAISS `IndexFlatIP` index, so inner product is equivalent to cosine similarity — simple and exact. At query time the top-5 chunks are retrieved (configurable in the UI) and pass them to Google Gemini with an explicit instruction to answer only from that context and say "I don't know" otherwise, plus a rule against stating specific facts (dates, grades, slots) that aren't grounded in the retrieved text. The UI displays which documents and pages were used for every answer.
+
+We used an open instruction-tuned model through Hugging Face’s free inference tier, so the project runs at no cost. Generation is kept at low temperature (0.1) to reduce drift from the retrieved context.
 
 ## Known limitations / what I'd improve with more time
 
